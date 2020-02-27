@@ -8,6 +8,9 @@ uses
   Data.DB, Vcl.ExtCtrls, Vcl.DBCtrls, Vcl.Menus, System.Actions, Vcl.ActnList,
   System.ImageList, Vcl.ImgList, System.Generics.Collections;
 
+const
+  WM_INIT_CONECTAR = WM_USER + 1;
+
 type
   TfrmPrincipal = class(TForm)
     cgrTareas: TDBCtrlGrid;
@@ -151,6 +154,7 @@ type
       FOpcionesMenuCategorias: TList<TMenuItem>;
       FFiltroStatus: TFiltroStatus;
       FOrdenTareas: TOrdenTareas;
+    procedure wmInitConectar(var AMessage: TMessage); message WM_INIT_CONECTAR;
     procedure AsignarResponsableClick(Sender: TObject);
     procedure AsignarCategoriaClick(Sender: TObject);
     procedure ConfigurarBaseDeDatos;
@@ -165,6 +169,7 @@ type
     procedure ActualizarEstadoAcciones;
     procedure MarcarPrioridadSeleccionada;
     procedure PosicionarEnPantalla;
+    procedure EstablecerConexionInicial;
   public
   end;
 
@@ -547,6 +552,15 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.EstablecerConexionInicial;
+begin
+  if not dmConexion.EstaConfigurado then
+    ConfigurarBaseDeDatos;
+  ConectarBaseDatos;
+  ActualizarEsquema;
+  FDM.qryTarea.Open;
+end;
+
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   FOpcionesMenuResponsables := TList<TMenuItem>.Create;
@@ -572,11 +586,8 @@ end;
 
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
-  if not dmConexion.EstaConfigurado then
-    ConfigurarBaseDeDatos;
-  ConectarBaseDatos;
-  ActualizarEsquema;
-  FDM.qryTarea.Open;
+  HandleNeeded;
+  PostMessage(Handle, WM_INIT_CONECTAR, 0, 0);
 end;
 
 procedure TfrmPrincipal.MarcarPrioridadSeleccionada;
@@ -604,6 +615,11 @@ end;
 procedure TfrmPrincipal.Responsable1Click(Sender: TObject);
 begin
   ActualizarMenuResponsables(Sender as TMenuItem);
+end;
+
+procedure TfrmPrincipal.wmInitConectar(var AMessage: TMessage);
+begin
+  EstablecerConexionInicial;
 end;
 
 end.
