@@ -1,5 +1,6 @@
 object dmTarea: TdmTarea
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 357
   Width = 282
   object qryResponsable: TFDQuery
@@ -18,15 +19,19 @@ object dmTarea: TdmTarea
       ReadOnly = True
     end
     object qryResponsableNombreCompleto: TStringField
+      DisplayLabel = 'Nombre completo'
       FieldName = 'NombreCompleto'
       Origin = 'NombreCompleto'
       Required = True
+      OnChange = qryResponsableNombreCompletoChange
+      OnSetText = StringSetTrimText
       Size = 200
     end
     object qryResponsableIniciales: TStringField
       FieldName = 'Iniciales'
       Origin = 'Iniciales'
       Required = True
+      OnSetText = StringSetTrimText
     end
   end
   object qryCategoria: TFDQuery
@@ -46,9 +51,11 @@ object dmTarea: TdmTarea
       ReadOnly = True
     end
     object qryCategoriaCategoria: TStringField
+      DisplayLabel = 'Categor'#237'a'
       FieldName = 'Categoria'
       Origin = 'Categoria'
       Required = True
+      OnSetText = StringSetTrimText
       Size = 100
     end
     object qryCategoriaColor: TLargeintField
@@ -59,13 +66,41 @@ object dmTarea: TdmTarea
   end
   object qryTarea: TFDQuery
     ActiveStoredUsage = []
-    OnEditError = qryTareaEditError
     OnNewRecord = qryTareaNewRecord
-    OnPostError = qryTareaPostError
+    Indexes = <
+      item
+        Active = True
+        Name = 'idxVPR'
+        Fields = 'FechaLimite;Prioridad;Iniciales'
+      end
+      item
+        Active = True
+        Name = 'idxVRP'
+        Fields = 'FechaLimite;Iniciales;Prioridad'
+      end
+      item
+        Active = True
+        Name = 'idxRPV'
+        Fields = 'Iniciales;Prioridad;FechaLimite'
+      end
+      item
+        Active = True
+        Name = 'idxRVP'
+        Fields = 'Iniciales;FechaLimite;Prioridad'
+      end
+      item
+        Active = True
+        Name = 'idxPRV'
+        Fields = 'Prioridad;Iniciales;FechaLimite'
+      end
+      item
+        Active = True
+        Name = 'idxPVR'
+        Fields = 'Prioridad;FechaLimite;Iniciales'
+      end>
     Connection = dmConexion.Conexion
     UpdateOptions.AssignedValues = [uvRefreshMode]
     UpdateOptions.KeyFields = 'idTarea'
-    OnError = qryTareaError
     SQL.Strings = (
       'select   t.*'
       
@@ -103,12 +138,15 @@ object dmTarea: TdmTarea
       FieldName = 'Tarea'
       Origin = 'Tarea'
       Required = True
+      OnSetText = StringSetTrimText
       BlobType = ftMemo
       Size = 2147483647
     end
     object qryTareaPrioridad: TIntegerField
       FieldName = 'Prioridad'
       Origin = 'Prioridad'
+      OnGetText = qryTareaPrioridadGetText
+      OnSetText = qryTareaPrioridadSetText
     end
     object qryTareaFechaLimite: TSQLTimeStampField
       FieldName = 'FechaLimite'
@@ -164,6 +202,24 @@ object dmTarea: TdmTarea
     object qryTareaColor: TLargeintField
       FieldName = 'Color'
       Origin = 'Color'
+    end
+  end
+  object mtPrioridades: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 160
+    Top = 160
+    object mtPrioridadesPrioridad: TIntegerField
+      FieldName = 'Prioridad'
+    end
+    object mtPrioridadesNombrePrioridad: TStringField
+      FieldName = 'NombrePrioridad'
+      Size = 100
     end
   end
 end

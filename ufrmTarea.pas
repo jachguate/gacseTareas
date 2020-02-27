@@ -24,7 +24,16 @@ type
     DBCheckBox1: TDBCheckBox;
     dsResponsable: TDataSource;
     dsCategoria: TDataSource;
+    lblPrioridad: TLabel;
+    cbPrioridad: TDBLookupComboBox;
+    pnlColorCategoria: TPanel;
+    dsPrioridad: TDataSource;
+    btnAgregarResponsable: TButton;
+    btnAgregarCategoría: TButton;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure dsTareaDataChange(Sender: TObject; Field: TField);
+    procedure btnAgregarResponsableClick(Sender: TObject);
+    procedure btnAgregarCategoríaClick(Sender: TObject);
   private
     FDM: TdmTarea;
     procedure SetDM(const Value: TdmTarea);
@@ -35,9 +44,77 @@ type
 
 implementation
 
+uses
+  ufrmCategoria, ufrmResponsable;
+
 {$R *.dfm}
 
 { TfrmTarea }
+
+procedure TfrmTarea.btnAgregarCategoríaClick(Sender: TObject);
+var
+  frmCategoria: TfrmCategoria;
+begin
+  FDM.qryCategoria.Insert;
+  try
+    frmCategoria := TfrmCategoria.Create(nil);
+    try
+      frmCategoria.DM := FDM;
+      frmCategoria.Execute;
+    finally
+      frmCategoria.Free;
+    end;
+  finally
+    if FDM.qryCategoria.State in dsEditModes then
+      FDM.qryCategoria.Cancel;
+  end;
+end;
+
+procedure TfrmTarea.btnAgregarResponsableClick(Sender: TObject);
+var
+  frmResponsable: TfrmResponsable;
+begin
+  FDM.qryResponsable.Insert;
+  try
+    frmResponsable := TfrmResponsable.Create(nil);
+    try
+      frmResponsable.DM := FDM;
+      frmResponsable.Execute;
+    finally
+      frmResponsable.Free;
+    end;
+  finally
+    if FDM.qryResponsable.State in dsEditModes then
+      FDM.qryResponsable.Cancel;
+  end;
+end;
+
+procedure TfrmTarea.dsTareaDataChange(Sender: TObject; Field: TField);
+var
+  vColor: Variant;
+  Color: Int64;
+begin
+  if not Assigned(FDM) then Exit;
+  if (not Assigned(Field)) or (Field = FDM.qryTareaidCategoria) then
+  begin
+    if FDM.qryTareaidCategoria.IsNull then
+      Color := 0
+    else
+    begin
+      vColor := FDM.qryCategoria.Lookup('idCategoria', FDM.qryTareaidCategoria.Value, 'Color');
+      if not VarIsNull(vColor) then
+        Color := vColor
+      else
+        Color := 0;
+    end;
+    if Color <> 0 then
+    begin
+      pnlColorCategoria.Color := Color;
+    end
+    else
+      pnlColorCategoria.Color := clBtnFace;
+  end;
+end;
 
 function TfrmTarea.Execute: Boolean;
 begin
@@ -60,13 +137,13 @@ begin
   FDM := Value;
   if Assigned(FDM) then
   begin
+    FDM.PrepararmtPrioridades;
+    FDM.RefrescarResponsables;
+    FDM.RefrescarCategorias;
     dsTarea.DataSet := FDM.qryTarea;
     dsResponsable.DataSet := FDM.qryResponsable;
     dsCategoria.DataSet := FDM.qryCategoria;
-    if not FDM.qryResponsable.Active then
-      FDM.qryResponsable.Open();
-    if not FDM.qryCategoria.Active then
-      FDM.qryCategoria.Open();
+    dsPrioridad.DataSet := FDM.mtPrioridades;
   end
   else
   begin

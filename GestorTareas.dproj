@@ -122,6 +122,14 @@
             <Form>frmTarea</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ufrmResponsable.pas">
+            <Form>frmResponsable</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ufrmCategoria.pas">
+            <Form>frmCategoria</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <RcItem Include="scripts\db\000001.sql">
             <ContainerId>ResourceItem</ContainerId>
             <ResourceType>RCDATA</ResourceType>

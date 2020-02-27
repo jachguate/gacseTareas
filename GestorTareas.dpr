@@ -8,7 +8,9 @@ uses
   udmConexion in 'udmConexion.pas' {dmConexion: TDataModule},
   udmTarea in 'udmTarea.pas' {dmTarea: TDataModule},
   udmEsquema in 'udmEsquema.pas' {dmEsquema: TDataModule},
-  ufrmTarea in 'ufrmTarea.pas' {frmTarea};
+  ufrmTarea in 'ufrmTarea.pas' {frmTarea},
+  ufrmResponsable in 'ufrmResponsable.pas' {frmResponsable},
+  ufrmCategoria in 'ufrmCategoria.pas' {frmCategoria};
 
 {$R *.res}
 

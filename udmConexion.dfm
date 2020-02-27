@@ -5,14 +5,8 @@ object dmConexion: TdmConexion
   object Conexion: TFDConnection
     ConnectionName = 'GestorTareasConexion'
     Params.Strings = (
-      'Database=Tareas'
-      'SERVER=JUANLP\SQL17'
-      'OSAuthent=Yes'
       'ApplicationName=GestorTareas'
       'MARS=yes'
-      'User_Name=sa'
-      'Password=estenoes'
-      'Workstation=JUANLP'
       'DriverID=MSSQL')
     ConnectedStoredUsage = []
     LoginPrompt = False
